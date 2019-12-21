@@ -10,11 +10,18 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
 
+    let defaultx = UserDefaults.standard
+    
     var itemArray = ["Study","WorkOut","Read"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        if let items = defaultx.array(forKey: "ToDoListDefault") as? [String] {
+            itemArray = items
+        }
+        
     }
     
     
@@ -43,6 +50,7 @@ class ToDoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             self.itemArray.append(textWaseet.text!)
+            self.defaultx.setValue(self.itemArray, forKey: "ToDoListDefault")
             print(self.itemArray)
             self.tableView.reloadData()
             
