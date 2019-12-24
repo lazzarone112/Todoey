@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		96380A2F23B14D0500373208 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96380A2E23B14D0500373208 /* Item.swift */; };
 		963F1DB723A8091500272D5A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963F1DB623A8091500272D5A /* AppDelegate.swift */; };
 		963F1DB923A8091500272D5A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963F1DB823A8091500272D5A /* SceneDelegate.swift */; };
 		963F1DBB23A8091500272D5A /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963F1DBA23A8091500272D5A /* ToDoListViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		96380A2E23B14D0500373208 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		963F1DB323A8091500272D5A /* ToDoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		963F1DB623A8091500272D5A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		963F1DB823A8091500272D5A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				963F1DB623A8091500272D5A /* AppDelegate.swift */,
 				963F1DB823A8091500272D5A /* SceneDelegate.swift */,
 				963F1DBA23A8091500272D5A /* ToDoListViewController.swift */,
+				96380A2E23B14D0500373208 /* Item.swift */,
 				963F1DBC23A8091500272D5A /* Main.storyboard */,
 				963F1DBF23A8091600272D5A /* Assets.xcassets */,
 				963F1DC123A8091600272D5A /* LaunchScreen.storyboard */,
@@ -138,6 +141,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96380A2F23B14D0500373208 /* Item.swift in Sources */,
 				963F1DBB23A8091500272D5A /* ToDoListViewController.swift in Sources */,
 				963F1DB723A8091500272D5A /* AppDelegate.swift in Sources */,
 				963F1DB923A8091500272D5A /* SceneDelegate.swift in Sources */,
