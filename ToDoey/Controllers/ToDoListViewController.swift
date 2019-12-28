@@ -10,8 +10,6 @@ import UIKit
 import  CoreData
 
 
-
-
 class ToDoListViewController: UITableViewController{
 
     let defaultx = UserDefaults.standard
@@ -30,7 +28,12 @@ class ToDoListViewController: UITableViewController{
             itemArray = items
         }
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        
+        searchBar.delegate = self
+        
         loadItems()
+        
+        
     }
     
     
@@ -76,6 +79,8 @@ class ToDoListViewController: UITableViewController{
             self.tableView.reloadData()
             
         }
+        
+        
         alert.addAction(action)
         alert.addTextField { (textField) in
             textField.placeholder = "Here : )"
@@ -83,6 +88,9 @@ class ToDoListViewController: UITableViewController{
         }
         present(alert, animated: true, completion: nil)
     }
+    
+    
+    @IBOutlet weak var searchBar: UISearchBar!
     
     func saveItems() {
        
@@ -94,9 +102,9 @@ class ToDoListViewController: UITableViewController{
         
     }
     
-    func loadItems() {
+    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest()) {
 
-        let request :NSFetchRequest<Item> = Item.fetchRequest()
+       
         do{
             itemArray = try context.fetch(request)
         }catch{
@@ -108,4 +116,29 @@ class ToDoListViewController: UITableViewController{
 //
 //
 //}
+}
+
+extension ToDoListViewController: UISearchBarDelegate {
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+       
+        
+    }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request:NSFetchRequest = Item.fetchRequest()
+               
+               let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+               
+               request.predicate = predicate
+               
+        let sortDiscriptor = NSSortDescriptor(key: "title", ascending: true)
+         
+        request.sortDescriptors = [sortDiscriptor]
+        
+             loadItems(with: request)
+        
+                tableView.reloadData()
+    }
+    
 }
