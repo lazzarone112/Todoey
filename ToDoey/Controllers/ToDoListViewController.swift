@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import  CoreData
 
 
 
@@ -17,8 +18,9 @@ class ToDoListViewController: UITableViewController{
     
     var itemArray = [Item]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
-    
+//    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
+//
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +29,7 @@ class ToDoListViewController: UITableViewController{
         if let items = defaultx.array(forKey: "ToDoListDefault") as? [Item] {
             itemArray = items
         }
-        print(dataFilePath)
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         loadItems()
     }
     
@@ -62,8 +64,9 @@ class ToDoListViewController: UITableViewController{
         let alert = UIAlertController(title: "Add a Task", message: "Add Your Task Name In The Field Under!", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
-            let newItem = Item()
+            let newItem = Item(context: self.context)
             newItem.title = textWaseet.text!
+            newItem.done = false
             self.itemArray.append(newItem)
 //            self.defaultx.setValue(self.itemArray, forKey: "ToDoListDefault")
            
@@ -82,10 +85,9 @@ class ToDoListViewController: UITableViewController{
     }
     
     func saveItems() {
-        let encoder = PropertyListEncoder()
+       
                    do{
-                       let data = try encoder.encode(self.itemArray)
-                       try data.write(to: self.dataFilePath!)
+                    try context.save()
                    }catch{
                        print(error)
                    }
@@ -93,18 +95,17 @@ class ToDoListViewController: UITableViewController{
     }
     
     func loadItems() {
-        
-        if  let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do{
-            itemArray = try decoder.decode([Item].self, from: data)
-        }catch{
-            print(error.self)
-        }
-        
-    }
-    
-    
 
-}
+        let request :NSFetchRequest<Item> = Item.fetchRequest()
+        do{
+            itemArray = try context.fetch(request)
+        }catch{
+            print(error)
+        }
+    
+    }
+//
+//
+//
+//}
 }
