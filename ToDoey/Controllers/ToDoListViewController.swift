@@ -140,5 +140,13 @@ extension ToDoListViewController: UISearchBarDelegate {
         
                 tableView.reloadData()
     }
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text?.count == 0 {
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+        
+    }
 }
