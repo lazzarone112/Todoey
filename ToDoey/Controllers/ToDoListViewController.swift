@@ -26,10 +26,8 @@ class ToDoListViewController: UITableViewController{
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 //
-        if let items = defaultx.array(forKey: "ToDoListDefault") as? [Item] {
-            itemArray = items
-        }
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+  
+//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         loadItems()
     }
     
@@ -94,18 +92,51 @@ class ToDoListViewController: UITableViewController{
         
     }
     
-    func loadItems() {
+    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest()) {
 
-        let request :NSFetchRequest<Item> = Item.fetchRequest()
+        
         do{
             itemArray = try context.fetch(request)
+            
         }catch{
             print(error)
         }
-    
+        tableView.reloadData()
     }
 //
 //
 //
 //}
+}
+
+extension ToDoListViewController:UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request:NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        let sortdiscriptor = NSSortDescriptor(key: "title", ascending: true)
+        
+        request.predicate = predicate
+        request.sortDescriptors = [sortdiscriptor]
+        
+        loadItems(with: request)
+        
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text?.count == 0 {
+            
+            DispatchQueue.main.async {
+                
+                searchBar.resignFirstResponder()
+                
+                self.loadItems()
+            }
+        }
+        
+    }
+    
 }
