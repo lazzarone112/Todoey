@@ -107,10 +107,11 @@ class ToDoListViewController: UITableViewController{
        
         do{
             itemArray = try context.fetch(request)
+          
         }catch{
             print(error)
         }
-    
+     tableView.reloadData()
     }
 //
 //
@@ -145,6 +146,7 @@ extension ToDoListViewController: UISearchBarDelegate {
         if searchBar.text?.count == 0 {
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
+                self.loadItems()
             }
         }
         
