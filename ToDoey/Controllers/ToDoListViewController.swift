@@ -16,6 +16,12 @@ class ToDoListViewController: UITableViewController{
     
     var itemArray = [Item]()
     
+    var selectedCategory : Category? {
+        didSet{
+            loadItems()
+        }
+    }
+    
 //    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
 //
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -70,6 +76,7 @@ class ToDoListViewController: UITableViewController{
             let newItem = Item(context: self.context)
             newItem.title = textWaseet.text!
             newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
 //            self.defaultx.setValue(self.itemArray, forKey: "ToDoListDefault")
            
@@ -102,8 +109,17 @@ class ToDoListViewController: UITableViewController{
         
     }
     
-    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(),predicate:NSPredicate? = nil) {
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
 
+        if let additonalPredicate = predicate {
+            
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [additonalPredicate,categoryPredicate])
+        }else{
+            request.predicate = categoryPredicate
+        }
+        
        
         do{
             itemArray = try context.fetch(request)
@@ -137,7 +153,7 @@ extension ToDoListViewController: UISearchBarDelegate {
          
         request.sortDescriptors = [sortDiscriptor]
         
-             loadItems(with: request)
+             loadItems(with: request,predicate: predicate)
         
                 tableView.reloadData()
     }

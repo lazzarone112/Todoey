@@ -34,10 +34,14 @@ class CategoryViewController: UITableViewController {
         return cell
         
     }
-//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//
-//
-//    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "GoToItems", sender: self)
+        
+        
+
+    }
+    
+  
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textWaseet = UITextField()
@@ -92,7 +96,19 @@ class CategoryViewController: UITableViewController {
             }
             tableView.reloadData()
     }
-    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let destinationVc = segue.destination as! ToDoListViewController
+        
+        if  let indexPath = tableView.indexPathForSelectedRow {
+            
+            destinationVc.selectedCategory = categoryArray[indexPath.row]
+            
+        }
+        
+        
+        
+      }
     
 }
 
