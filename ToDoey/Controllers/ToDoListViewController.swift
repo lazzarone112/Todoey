@@ -110,7 +110,7 @@ class ToDoListViewController: UITableViewController{
         }catch{
             print(error)
         }
-    
+        tableView.reloadData()
     }
 //
 //
@@ -120,9 +120,15 @@ class ToDoListViewController: UITableViewController{
 
 extension ToDoListViewController: UISearchBarDelegate {
     
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         
-       
+        if searchBar.text?.count == 0{
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+                self.loadItems()
+            }
+        }
         
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
