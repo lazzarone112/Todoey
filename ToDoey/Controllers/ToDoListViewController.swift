@@ -16,6 +16,13 @@ class ToDoListViewController: UITableViewController{
     
     var itemArray = [Item]()
     
+    var selectedCategory :Category? {
+        didSet{
+            loadItems()
+            
+        }
+    }
+    
 //    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
 //
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -70,6 +77,7 @@ class ToDoListViewController: UITableViewController{
             let newItem = Item(context: self.context)
             newItem.title = textWaseet.text!
             newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
 //            self.defaultx.setValue(self.itemArray, forKey: "ToDoListDefault")
            
@@ -102,11 +110,21 @@ class ToDoListViewController: UITableViewController{
         
     }
     
-    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(),Predicate:NSPredicate? = nil) {
 
-       
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = Predicate {
+            
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
+        }else{
+            request.predicate = categoryPredicate
+        }
         do{
             itemArray = try context.fetch(request)
+            
+            
+            
         }catch{
             print(error)
         }
@@ -120,16 +138,9 @@ class ToDoListViewController: UITableViewController{
 
 extension ToDoListViewController: UISearchBarDelegate {
     
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
-        if searchBar.text?.count == 0{
-            
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()
-                self.loadItems()
-            }
-        }
-        
+
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let request:NSFetchRequest = Item.fetchRequest()
@@ -142,9 +153,18 @@ extension ToDoListViewController: UISearchBarDelegate {
          
         request.sortDescriptors = [sortDiscriptor]
         
-             loadItems(with: request)
+             loadItems(with: request, Predicate: predicate)
         
                 tableView.reloadData()
     }
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+                if searchBar.text?.count == 0{
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+                self.loadItems()
+            }
+        }
+        
+    }
 }
