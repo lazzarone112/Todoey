@@ -8,17 +8,18 @@
 
 import UIKit
 import  CoreData
+import RealmSwift
 
 
 class ToDoListViewController: UITableViewController{
 
-    let defaultx = UserDefaults.standard
+    let realm = try! Realm()
     
     var itemArray = [Item]()
     
     var selectedCategory :Category? {
         didSet{
-            loadItems()
+//            loadItems()
             
         }
     }
@@ -31,14 +32,13 @@ class ToDoListViewController: UITableViewController{
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 //
-        if let items = defaultx.array(forKey: "ToDoListDefault") as? [Item] {
-            itemArray = items
-        }
+        
+
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         searchBar.delegate = self
         
-        loadItems()
+//        loadItems()
         
         
     }
@@ -58,10 +58,10 @@ class ToDoListViewController: UITableViewController{
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        
-       saveItems()
-        
+//        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+//
+//       saveItems()
+//
         tableView.reloadData()
         
     }
@@ -70,25 +70,30 @@ class ToDoListViewController: UITableViewController{
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textWaseet = UITextField()
-        
+
         let alert = UIAlertController(title: "Add a Task", message: "Add Your Task Name In The Field Under!", preferredStyle: .alert)
-        
+
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
-            let newItem = Item(context: self.context)
-            newItem.title = textWaseet.text!
-            newItem.done = false
-            newItem.parentCategory = self.selectedCategory
-            self.itemArray.append(newItem)
-//            self.defaultx.setValue(self.itemArray, forKey: "ToDoListDefault")
-           
-            self.saveItems()
             
+            do{
+                try self.realm.write {
+                    let newItem = Item()
+                    newItem.title = textWaseet.text!
+                    self.selectedCategory?.items.append(newItem)
+                }
+            }catch{
+                print(error)
+            }
+//
+
+           
+
             print(self.itemArray)
             self.tableView.reloadData()
-            
+
         }
-        
-        
+//
+//
         alert.addAction(action)
         alert.addTextField { (textField) in
             textField.placeholder = "Here : )"
@@ -100,36 +105,36 @@ class ToDoListViewController: UITableViewController{
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    func saveItems() {
-       
-                   do{
-                    try context.save()
-                   }catch{
-                       print(error)
-                   }
-        
-    }
+//    func saveItems() {
+//
+//                   do{
+//                    try context.save()
+//                   }catch{
+//                       print(error)
+//                   }
+//
+//    }
     
-    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(),Predicate:NSPredicate? = nil) {
-
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-        if let additionalPredicate = Predicate {
-            
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
-        }else{
-            request.predicate = categoryPredicate
-        }
-        do{
-            itemArray = try context.fetch(request)
-            
-            
-            
-        }catch{
-            print(error)
-        }
-        tableView.reloadData()
-    }
+//    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(),Predicate:NSPredicate? = nil) {
+//
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+//
+//        if let additionalPredicate = Predicate {
+//
+//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
+//        }else{
+//            request.predicate = categoryPredicate
+//        }
+//        do{
+//            itemArray = try context.fetch(request)
+//
+//
+//
+//        }catch{
+//            print(error)
+//        }
+//        tableView.reloadData()
+//    }
 //
 //
 //
@@ -142,27 +147,27 @@ extension ToDoListViewController: UISearchBarDelegate {
         
 
     }
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let request:NSFetchRequest = Item.fetchRequest()
-               
-               let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-               
-               request.predicate = predicate
-               
-        let sortDiscriptor = NSSortDescriptor(key: "title", ascending: true)
-         
-        request.sortDescriptors = [sortDiscriptor]
-        
-             loadItems(with: request, Predicate: predicate)
-        
-                tableView.reloadData()
-    }
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        let request:NSFetchRequest = Item.fetchRequest()
+//
+//               let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//
+//               request.predicate = predicate
+//
+//        let sortDiscriptor = NSSortDescriptor(key: "title", ascending: true)
+//
+//        request.sortDescriptors = [sortDiscriptor]
+//
+//             loadItems(with: request, Predicate: predicate)
+//
+//                tableView.reloadData()
+//    }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
                 if searchBar.text?.count == 0{
             
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
-                self.loadItems()
+//                self.loadItems()
             }
         }
         
