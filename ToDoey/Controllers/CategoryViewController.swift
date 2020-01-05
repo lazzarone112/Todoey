@@ -8,12 +8,15 @@
 
 import UIKit
 import CoreData
+import RealmSwift
+
 
 class CategoryViewController: UITableViewController {
     
-    var categoryArray = [Category]()
+    var categoryArray : Results<Category>?
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let realm = try! Realm()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,14 +25,14 @@ class CategoryViewController: UITableViewController {
        
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArray.count
+        return categoryArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
         
-        cell.textLabel?.text = categoryArray[indexPath.row].name
+        cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Category Added Yet.."
         
         return cell
         
@@ -50,13 +53,12 @@ class CategoryViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
             
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             
-            newCategory.name = textWaseet.text
+            newCategory.name = textWaseet.text!
             
-            self.categoryArray.append(newCategory)
             
-            self.saveCategory()
+            self.saveCategory(category: newCategory)
             
             self.tableView.reloadData()
             
@@ -73,10 +75,12 @@ class CategoryViewController: UITableViewController {
     }
     
 
-    func saveCategory() {
+    func saveCategory(category:Category) {
         
         do{
-          try context.save()
+            try realm.write {
+                realm.add(category)
+            }
             
         }catch{
             print(error)
@@ -86,14 +90,9 @@ class CategoryViewController: UITableViewController {
         
         func loadCategory() {
             
-            let request :NSFetchRequest = Category.fetchRequest()
             
-            do{
-                
-            categoryArray = try context.fetch(request)
-            }catch{
-                print(error)
-            }
+            categoryArray = realm.objects(Category.self)
+         
             tableView.reloadData()
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -102,7 +101,7 @@ class CategoryViewController: UITableViewController {
         
         if  let indexPath = tableView.indexPathForSelectedRow {
             
-            destinationVc.selectedCategory = categoryArray[indexPath.row]
+            destinationVc.selectedCategory = categoryArray?[indexPath.row]
             
         }
         
