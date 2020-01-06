@@ -59,9 +59,16 @@ class ToDoListViewController: UITableViewController{
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-//
-       saveItems()
+        
+        if let item = itemArray?[indexPath.row] {
+            do {
+               try realm.write {
+                    item.done = !item.done
+                }
+            }catch{
+                print(error)
+            }
+        }
         
         tableView.reloadData()
         
@@ -137,21 +144,11 @@ extension ToDoListViewController: UISearchBarDelegate {
        
         
     }
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        let request:NSFetchRequest = Item.fetchRequest()
-//               
-//               let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//               
-//               request.predicate = predicate
-//               
-//        let sortDiscriptor = NSSortDescriptor(key: "title", ascending: true)
-//         
-//        request.sortDescriptors = [sortDiscriptor]
-//        
-//             loadItems(with: request,predicate: predicate)
-//        
-//                tableView.reloadData()
-//    }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        itemArray = itemArray?.filter(NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)).sorted(byKeyPath: "date", ascending: true)
+            tableView.reloadData()
+    }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
         if searchBar.text?.count == 0 {
